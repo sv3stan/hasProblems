@@ -6,10 +6,10 @@ export class User {
   id: number;
 
   @Column()
-  firstName: string;
+  first_name: string;
 
   @Column()
-  lastName: string;
+  last_name: string;
 
   @Column()
   age: number;
@@ -18,5 +18,5 @@ export class User {
   gender: string;
 
   @Column({ default: false })
-  hasProblems: boolean;
+  has_problems: boolean;
 }

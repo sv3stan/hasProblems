@@ -1,0 +1,4 @@
+﻿ "migration:generate": "npm run typeorm migration:generate -- -d src/typeorm.config.ts",
+    "makeTableUsers": "npm run typeorm migration:run -- -d src/typeorm.config.ts",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:revert": "npm run typeorm -- migration:revert"
