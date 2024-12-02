@@ -6,6 +6,7 @@ const AppDataSource = new DataSource({
   entities: ['*/**/*.entity.ts'],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
+  logging: false,
 });
 
 AppDataSource.initialize()

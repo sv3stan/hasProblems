@@ -1,7 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
-export class SeedInitialUsers1733147854581 implements MigrationInterface {
+
+export class SeedInitialUsers1733152184670 implements MigrationInterface {
   private maleNames: string[] = [];
   private femaleNames: string[] = [];
   private lastNames: string[] = [];
@@ -19,7 +20,7 @@ export class SeedInitialUsers1733147854581 implements MigrationInterface {
     this.femaleNames = await this.readCSV('female.csv');
     this.lastNames = await this.readCSV('last_name.csv');
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 100000; i++) {
       const gender = Math.random() > 0.5 ? 'male' : 'female';
       let firstName: string;
       if (gender === 'male') {

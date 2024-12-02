@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 //******************** */
+import { UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './users.entity';
@@ -24,7 +25,6 @@ export class UsersService {
     user.age = age;
     user.gender = gender;
     user.has_problems = hasProblems;
-
     return this.userRepository.save(user);
   }
 
@@ -34,7 +34,6 @@ export class UsersService {
     });
   }
 
-  // Сброс флага проблем у пользователей
   async resetProblems(): Promise<{ updatedCount: number }> {
     const count = await this.userRepository.count({
       where: { has_problems: true },
@@ -49,25 +48,40 @@ export class UsersService {
   }
   async resetAndCountProblems(): Promise<{ count: number; reset: boolean }> {
     const count = await this.getProblemsCount();
-
-    // Сбрасываем флаг проблем
     await this.resetProblems();
-
     return { count, reset: true };
   }
 
   async updateRandomProblems(): Promise<{ updatedCount: number }> {
-    const users = await this.userRepository.find();
+    const count = await this.userRepository.count();
+    const targetCount = Math.round(count * 0.4); // 80% от общего количества пользователей
 
+    const randomIndexes = new Set<number>();
+    while (randomIndexes.size < targetCount) {
+      const randomIndex = Math.floor(Math.random() * count) + 1; // IDs начинаются с 1
+      randomIndexes.add(randomIndex);
+    }
+    const idsArray = Array.from(randomIndexes);
+
+    const BATCH_SIZE = 10000;
     let updatedCount = 0;
 
-    for (const user of users) {
-      const hasProblems = Math.random() > 0.8;
-      if (user.has_problems !== hasProblems) {
-        user.has_problems = hasProblems;
-        await this.userRepository.save(user);
-        updatedCount++;
-      }
+    for (let i = 0; i < idsArray.length; i += BATCH_SIZE) {
+      const batch = idsArray.slice(i, i + BATCH_SIZE);
+
+      // Обновляем данные в базе с использованием UpdateQueryBuilder
+      const result: UpdateResult = await this.userRepository
+        .createQueryBuilder()
+        .update(User)
+        .set({
+          has_problems: () =>
+            'CASE WHEN random() > 0.2 THEN true ELSE false END',
+        })
+        .where('id IN (:...ids)', { ids: batch })
+        .execute();
+
+      // Добавляем количество затронутых строк
+      updatedCount += result.affected || 0;
     }
 
     return { updatedCount };

@@ -12,20 +12,26 @@ export class UsersController {
   async createUser(
     @Body()
     body: {
-      firstName: string;
-      lastName: string;
+      first_name: string;
+      last_name: string;
       age: number;
       gender: string;
-      hasProblems: boolean;
+      has_problems: boolean;
     },
   ): Promise<User> {
-    const { firstName, lastName, age, gender, hasProblems } = body;
+    const userData = {
+      first_name: body.first_name,
+      last_name: body.last_name,
+      age: body.age,
+      gender: body.gender,
+      has_problems: body.has_problems,
+    };
     return this.usersService.createUser(
-      firstName,
-      lastName,
-      age,
-      gender,
-      hasProblems,
+      userData.first_name,
+      userData.last_name,
+      userData.age,
+      userData.gender,
+      userData.has_problems,
     );
   }
 
