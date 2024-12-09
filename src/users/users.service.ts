@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-//******************** */
 import { UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -54,11 +53,11 @@ export class UsersService {
 
   async updateRandomProblems(): Promise<{ updatedCount: number }> {
     const count = await this.userRepository.count();
-    const targetCount = Math.round(count * 0.4); // 80% от общего количества пользователей
+    const targetCount = Math.round(count * 0.4);
 
     const randomIndexes = new Set<number>();
     while (randomIndexes.size < targetCount) {
-      const randomIndex = Math.floor(Math.random() * count) + 1; // IDs начинаются с 1
+      const randomIndex = Math.floor(Math.random() * count) + 1;
       randomIndexes.add(randomIndex);
     }
     const idsArray = Array.from(randomIndexes);
@@ -69,7 +68,6 @@ export class UsersService {
     for (let i = 0; i < idsArray.length; i += BATCH_SIZE) {
       const batch = idsArray.slice(i, i + BATCH_SIZE);
 
-      // Обновляем данные в базе с использованием UpdateQueryBuilder
       const result: UpdateResult = await this.userRepository
         .createQueryBuilder()
         .update(User)
@@ -80,7 +78,6 @@ export class UsersService {
         .where('id IN (:...ids)', { ids: batch })
         .execute();
 
-      // Добавляем количество затронутых строк
       updatedCount += result.affected || 0;
     }
 
